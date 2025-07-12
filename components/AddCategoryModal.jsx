@@ -58,7 +58,7 @@ export default function AddCategoryModal() {
       <div className="flex justify-between items-center">
         <button
           onClick={() => setIsOpen(true)}
-          className="text-blue-500 text-2xl hover:text-blue-700 px-2 rounded-full hover:bg-blue-50 transition-colors cursor-pointer"
+          className="bg-blue-500 text-xl text-white hover:bg-blue-600 px-2 rounded-full transition-colors cursor-pointer"
           aria-label="Add category"
         >
           +

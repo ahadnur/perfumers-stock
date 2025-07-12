@@ -5,7 +5,7 @@ import { db } from '@/lib/firebase';
 import { lightenColor } from '@/lib/colorUtils';
 import toast from 'react-hot-toast';
 
-export default function CategoryList({ onSelectMaterial }) {
+export default function CategoryList({ onSelectMaterial, selectedMaterialId }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,15 +15,17 @@ export default function CategoryList({ onSelectMaterial }) {
       (snapshot) => {
         const categoriesData = snapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
+          materials: doc.data().materials?.map(m => ({
+            ...m,
+            categoryId: doc.id, // Add category reference
+            categoryColor: doc.data().color // Include category color
+          }))
         }));
         
-        // Sort categories alphabetically by name
-        const sortedCategories = [...categoriesData].sort((a, b) => 
+        setCategories([...categoriesData].sort((a, b) => 
           a.name.localeCompare(b.name)
-        );
-        
-        setCategories(sortedCategories);
+        ));
         setLoading(false);
       },
       (error) => {
@@ -36,45 +38,42 @@ export default function CategoryList({ onSelectMaterial }) {
   }, []);
 
   if (loading) {
-    return (
-      <div className="space-y-2">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="mb-2 animate-pulse">
-            <div className="h-12 bg-gray-200 rounded-t-lg"></div>
-            <div className="space-y-1">
-              {[...Array(2)].map((_, j) => (
-                <div key={j} className="h-8 bg-gray-100"></div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+    return <div className="space-y-2">{/* ... skeleton loader ... */}</div>;
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1"> {/* Reduced spacing */}
       {categories.map((category) => {
-        const lighterColor = lightenColor(category.color, 30); // 30% lighter
+        const lighterColor = lightenColor(category.color, 40); // Slightly lighter
         
         return (
-          <div key={category.id} className="mb-2">
-            {/* Category Header */}
+          <div key={category.id} className="mb-1"> {/* Reduced margin */}
             <div 
-              className="py-1 px-2 rounded-t-lg font-medium"
-              style={{ backgroundColor: category.color }}
+              className="py-1 px-2 font-medium text-sm" // Smaller text
+              style={{ 
+                backgroundColor: category.color,
+                borderTopLeftRadius: '0.25rem',
+                borderTopRightRadius: '0.25rem'
+              }}
             >
               {category.name}
             </div>
 
-            {/* Materials List */}
-            <div className="">
-              {category.materials?.map((material) => (
+            <div className="border-l border-r border-b rounded-b-lg overflow-hidden">
+              {category.materials?.sort((a,b) => a.name.localeCompare(b.name))
+                .map((material) => (
                 <div
                   key={material.id}
                   onClick={() => onSelectMaterial(material)}
-                  className="p-2 text-sm cursor-pointer hover:brightness-110"
-                  style={{ backgroundColor: lighterColor }}
+                  className={`p-1.5 px-3 text-xs cursor-pointer transition-colors ${
+                    selectedMaterialId === material.id ? 
+                    'font-semibold bg-opacity-90' : 
+                    'hover:bg-opacity-80'
+                  }`}
+                  style={{ 
+                    backgroundColor: lighterColor,
+                    borderBottom: '1px solid rgba(255,255,255,0.2)'
+                  }}
                 >
                   {material.name}
                 </div>

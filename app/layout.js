@@ -28,7 +28,6 @@ export default function RootLayout({ children }) {
       >
         <AuthProvider>
           {children}
-          <AddCategoryModal />
           <ToasterProvider />
         </AuthProvider>
       </body>
