@@ -1,14 +1,12 @@
 export function lightenColor(hex, percent) {
-  // Convert hex to RGB
-  let r = parseInt(hex.slice(1, 3), 16);
-  let g = parseInt(hex.slice(3, 5), 16);
-  let b = parseInt(hex.slice(5, 7), 16);
+  hex = hex.replace(/^#/, '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
 
-  // Lighten each channel
-  r = Math.min(255, r + Math.round(255 * (percent/100)));
-  g = Math.min(255, g + Math.round(255 * (percent/100)));
-  b = Math.min(255, b + Math.round(255 * (percent/100)));
+  const newR = Math.min(255, r + (255 - r) * (percent / 100));
+  const newG = Math.min(255, g + (255 - g) * (percent / 100));
+  const newB = Math.min(255, b + (255 - b) * (percent / 100));
 
-  // Convert back to hex
-  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  return `#${Math.round(newR).toString(16).padStart(2, '0')}${Math.round(newG).toString(16).padStart(2, '0')}${Math.round(newB).toString(16).padStart(2, '0')}`;
 }

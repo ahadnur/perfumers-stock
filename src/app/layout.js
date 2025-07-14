@@ -1,5 +1,5 @@
 import { AuthProvider } from "@/components/AuthProvider";
-import AddCategoryModal from "@/components/AddCategoryModal"
+import AddCategoryModal from "@/components/category/AddCategoryModal"
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ToasterProvider from "@/components/ToasterProvider";

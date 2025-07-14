@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import AddMaterialModal from './AddMaterialModal';
 import EditMaterialModal from './EditMaterialModal';
 
-export default function MaterialManagement() {
+export default function MaterialManagement({ onDataChange }) {
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -55,6 +55,7 @@ export default function MaterialManagement() {
     } else {
       toast.success('Material deleted successfully!');
       fetchMaterials();
+      if (onDataChange) onDataChange();
     }
   };
 
@@ -65,6 +66,7 @@ export default function MaterialManagement() {
   const handleEditClose = () => {
     setEditingMaterial(null);
     fetchMaterials();
+    if (onDataChange) onDataChange();
   };
 
   useEffect(() => {
@@ -75,7 +77,10 @@ export default function MaterialManagement() {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Manage Materials</h2>
       <div className="mb-4">
-        <AddMaterialModal onMaterialAdded={fetchMaterials} />
+        <AddMaterialModal onMaterialAdded={() => {
+          fetchMaterials();
+          if (onDataChange) onDataChange();
+        }} />
       </div>
 
       {loading && <p>Loading materials...</p>}
@@ -96,7 +101,7 @@ export default function MaterialManagement() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inventory (g)</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost/gram</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -111,13 +116,13 @@ export default function MaterialManagement() {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button
                       onClick={() => handleEditClick(material)}
-                      className="text-indigo-600 hover:text-indigo-900 mr-2"
+                      className="text-indigo-600 hover:text-indigo-900 mr-2 px-3 py-1 cursor-pointer"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(material.id)}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 hover:text-red-900 px-3 py-1 cursor-pointer"
                     >
                       Delete
                     </button>

@@ -69,7 +69,7 @@ export default function AddMaterialModal({ onMaterialAdded }) {
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded">
+      <button onClick={() => setIsOpen(true)} className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer">
         Add Material
       </button>
 
@@ -171,10 +171,10 @@ export default function AddMaterialModal({ onMaterialAdded }) {
                 />
               </div>
               <div className="flex justify-end gap-4">
-                <button type="button" onClick={() => setIsOpen(false)} className="bg-gray-300 px-4 py-2 rounded">
+                <button type="button" onClick={() => setIsOpen(false)} className="bg-gray-300 px-3 py-1 rounded cursor-pointer">
                   Cancel
                 </button>
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+                <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer">
                   Save
                 </button>
               </div>

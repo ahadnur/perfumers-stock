@@ -79,16 +79,16 @@ export default function EditSupplierModal({ supplier, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded hover:bg-gray-100"
+              className="px-3 py-1 border rounded hover:bg-gray-100 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${
+              className={`px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 ${
                 isLoading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              } cursor-pointer`}
             >
               {isLoading ? 'Updating...' : 'Update Supplier'}
             </button>

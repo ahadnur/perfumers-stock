@@ -5,7 +5,7 @@ import AddCategoryModal from './AddCategoryModal';
 import EditCategoryModal from './EditCategoryModal';
 import toast from 'react-hot-toast';
 
-export default function CategoryManagement() {
+export default function CategoryManagement({ onDataChange }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,6 +43,7 @@ export default function CategoryManagement() {
     } else {
       toast.success('Category deleted successfully!');
       fetchCategories(); // Refresh the list
+      if (onDataChange) onDataChange();
     }
   };
 
@@ -53,6 +54,7 @@ export default function CategoryManagement() {
   const handleEditClose = () => {
     setEditingCategory(null);
     fetchCategories(); // Refresh list after edit
+    if (onDataChange) onDataChange();
   };
 
   useEffect(() => {
@@ -63,7 +65,10 @@ export default function CategoryManagement() {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Manage Categories</h2>
       <div className="mb-4">
-        <AddCategoryModal onCategoryAdded={fetchCategories} />
+        <AddCategoryModal onCategoryAdded={() => {
+          fetchCategories();
+          if (onDataChange) onDataChange();
+        }} />
       </div>
 
       {loading && <p>Loading categories...</p>}
@@ -80,7 +85,7 @@ export default function CategoryManagement() {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -99,13 +104,13 @@ export default function CategoryManagement() {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button
                       onClick={() => handleEditClick(category)}
-                      className="text-indigo-600 hover:text-indigo-900 mr-2"
+                      className="text-indigo-600 hover:text-indigo-900 mr-2 px-3 py-1 cursor-pointer"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(category.id)}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 hover:text-red-900 px-3 py-1 cursor-pointer"
                     >
                       Delete
                     </button>

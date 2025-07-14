@@ -71,10 +71,10 @@ export default function AddCategoryModal({ onCategoryAdded }) {
       <div className="flex justify-between items-center">
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-blue-500 text-xl text-white hover:bg-blue-600 px-2 rounded-full transition-colors cursor-pointer"
+          className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer"
           aria-label="Add category"
         >
-          +
+          Add Category
         </button>
       </div>
 
@@ -115,14 +115,14 @@ export default function AddCategoryModal({ onCategoryAdded }) {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''} cursor-pointer`}
                 >
                   {isLoading ? 'Adding...' : 'Add Category'}
                 </button>
