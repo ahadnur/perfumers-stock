@@ -3,11 +3,11 @@ import { useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LogoutButton from '@/components/LogoutButton';
 import SupplierManagement from '@/components/SupplierManagement';
-import CategoryManagement from '@/components/CategoryManagement'; // New import
+import CategoryManagement from '@/components/CategoryManagement';
+import MaterialManagement from '@/components/MaterialManagement';
 
 
 function DashboardPage() {
-  const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [activeTab, setActiveTab] = useState('materials'); // 'materials', 'suppliers', or 'categories'
 
   return (
@@ -41,39 +41,12 @@ function DashboardPage() {
               Categories
             </button>
           </div>
-
-          {activeTab === 'materials' && (
-            <>
-              {/* Original material/category list content will go here if needed */}
-              {/* For now, we'll leave it empty or add a placeholder */}
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="font-bold">Categories</h2>
-                {/* AddCategoryModal will be handled by CategoryManagement */}
-              </div>
-              {/* CategoryList will be handled by CategoryManagement */}
-              <div className="flex items-center justify-center h-full text-gray-500">
-                Select a material from the sidebar
-              </div>
-            </>
-          )}
         </div>
 
         {/* Main Content */}
         <div className="flex-1 p-6">
           {activeTab === 'materials' && (
-            selectedMaterial ? (
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h2 className="text-2xl font-bold mb-4">{selectedMaterial.name}</h2>
-                <div className="space-y-4">
-                  <p><span className="font-semibold">CAS:</span> {selectedMaterial.cas}</p>
-                  {/* Add more fields later */}
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                Select a material from the sidebar
-              </div>
-            )
+            <MaterialManagement />
           )}
 
           {activeTab === 'suppliers' && (
