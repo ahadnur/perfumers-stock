@@ -1,21 +1,26 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { supabase } from '@/lib/supabaseClient';
 
-export default function AddSupplierModal() {
+export default function AddSupplierModal({ onSupplierAdded }) {
   const [isOpen, setIsOpen] = useState(false);
   const [supplierName, setSupplierName] = useState('');
+  const [supplierPhone, setSupplierPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const checkSupplierExists = async (name) => {
-    const q = query(
-      collection(db, 'suppliers'),
-      where('name', '==', name)
-    );
-    const querySnapshot = await getDocs(q);
-    return !querySnapshot.empty;
+    const { data, error } = await supabase
+      .from('suppliers')
+      .select('name')
+      .eq('name', name)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+      console.error('Error checking supplier existence:', error.message);
+      return false; // Assume not exists on error
+    }
+    return data !== null;
   };
 
   const handleSubmit = async (e) => {
@@ -23,30 +28,39 @@ export default function AddSupplierModal() {
     setIsLoading(true);
 
     try {
-      // Trim and validate
       const trimmedName = supplierName.trim();
+      const trimmedPhone = supplierPhone.trim();
+
       if (!trimmedName) {
         toast.error('Supplier name cannot be empty');
         return;
       }
 
-      // Check for duplicates
       if (await checkSupplierExists(trimmedName)) {
         toast.error('Supplier already exists');
         return;
       }
 
-      // Add to Firestore
-      await addDoc(collection(db, 'suppliers'), {
-        name: trimmedName,
-        createdAt: new Date()
-      });
+      const { data, error } = await supabase
+        .from('suppliers')
+        .insert([
+          { name: trimmedName, phone: trimmedPhone }
+        ])
+        .select(); // Use .select() to return the inserted data
+
+      if (error) {
+        throw new Error(error.message);
+      }
 
       toast.success(`${trimmedName} added successfully!`);
       setSupplierName('');
+      setSupplierPhone('');
       setIsOpen(false);
+      if (onSupplierAdded) {
+        onSupplierAdded();
+      }
     } catch (error) {
-      toast.error(`Error: ${error.message}`);
+      toast.error(`Error adding supplier: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -67,16 +81,29 @@ export default function AddSupplierModal() {
             <h2 className="text-xl font-bold mb-4">Add New Supplier</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">
+                <label htmlFor="supplierName" className="block text-sm font-medium mb-1">
                   Supplier Name
                 </label>
                 <input
                   type="text"
+                  id="supplierName"
                   value={supplierName}
                   onChange={(e) => setSupplierName(e.target.value)}
                   className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                   required
                   autoFocus
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="supplierPhone" className="block text-sm font-medium mb-1">
+                  Phone (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="supplierPhone"
+                  value={supplierPhone}
+                  onChange={(e) => setSupplierPhone(e.target.value)}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="flex justify-end space-x-2">

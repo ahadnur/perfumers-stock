@@ -1,40 +1,36 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { collection, onSnapshot } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import { lightenColor } from '@/lib/colorUtils';
 import toast from 'react-hot-toast';
+
+const staticCategories = [
+  {
+    id: '1',
+    name: 'Citrus',
+    color: '#FFD700',
+    materials: [
+      { id: 'm1', name: 'Bergamot' },
+      { id: 'm2', name: 'Lemon' },
+    ],
+  },
+  {
+    id: '2',
+    name: 'Floral',
+    color: '#FFB6C1',
+    materials: [
+      { id: 'm3', name: 'Rose' },
+      { id: 'm4', name: 'Jasmine' },
+    ],
+  },
+];
 
 export default function CategoryList({ onSelectMaterial, selectedMaterialId }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(db, 'categories'),
-      (snapshot) => {
-        const categoriesData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          materials: doc.data().materials?.map(m => ({
-            ...m,
-            categoryId: doc.id, // Add category reference
-            categoryColor: doc.data().color // Include category color
-          }))
-        }));
-        
-        setCategories([...categoriesData].sort((a, b) => 
-          a.name.localeCompare(b.name)
-        ));
-        setLoading(false);
-      },
-      (error) => {
-        toast.error('Error loading categories: ' + error.message);
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
+    setCategories(staticCategories);
+    setLoading(false);
   }, []);
 
   if (loading) {

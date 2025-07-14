@@ -1,52 +1,65 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import toast from 'react-hot-toast';
+import { supabase } from '@/lib/supabaseClient';
 
-export default function AddCategoryModal() {
+export default function AddCategoryModal({ onCategoryAdded }) {
   const [isOpen, setIsOpen] = useState(false);
   const [categoryName, setCategoryName] = useState('');
   const [color, setColor] = useState('#FFB7D5');
-  const [existingCategories, setExistingCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch existing categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const querySnapshot = await getDocs(collection(db, 'categories'));
-      setExistingCategories(
-        querySnapshot.docs.map(doc => doc.data().name.toLowerCase())
-      );
-    };
-    fetchCategories();
-  }, []);
+  const checkCategoryExists = async (name) => {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('name')
+      .eq('name', name)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+      console.error('Error checking category existence:', error.message);
+      return false; // Assume not exists on error
+    }
+    return data !== null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Check for duplicates
-      if (existingCategories.includes(categoryName.toLowerCase())) {
+      const trimmedName = categoryName.trim();
+
+      if (!trimmedName) {
+        toast.error('Category name cannot be empty');
+        return;
+      }
+
+      if (await checkCategoryExists(trimmedName)) {
         toast.error('Category already exists!');
         return;
       }
 
-      // Add to Firestore
-      await addDoc(collection(db, 'categories'), {
-        name: categoryName,
-        color: color,
-        materials: [],
-        createdAt: new Date()
-      });
+      const { data, error } = await supabase
+        .from('categories')
+        .insert([
+          { name: trimmedName, color: color }
+        ])
+        .select(); // Use .select() to return the inserted data
 
-      toast.success('Category added successfully!');
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      toast.success(`${trimmedName} added successfully!`);
       setCategoryName('');
       setColor('#FFB7D5');
       setIsOpen(false);
+      if (onCategoryAdded) {
+        onCategoryAdded();
+      }
     } catch (error) {
-      toast.error('Error adding category: ' + error.message);
+      toast.error(`Error adding category: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
