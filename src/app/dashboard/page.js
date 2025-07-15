@@ -14,8 +14,6 @@ function DashboardPage() {
   const [materials, setMaterials] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
-  const [openCategories, setOpenCategories] = useState({});
-
   const fetchSidebarData = async () => {
     const { data: categoriesData, error: categoriesError } = await supabase
       .from('categories')
@@ -50,13 +48,6 @@ function DashboardPage() {
 
   const handleDataChange = () => {
     fetchSidebarData();
-  };
-
-  const toggleCategory = (categoryId) => {
-    setOpenCategories(prev => ({
-      ...prev,
-      [categoryId]: !prev[categoryId]
-    }));
   };
 
   return (
@@ -95,31 +86,27 @@ function DashboardPage() {
             <h2 className="font-bold mb-2">Materials by Category</h2>
             {categories.map(category => (
               <div key={category.id} className="mb-2 rounded-sm">
-                <button
-                  onClick={() => toggleCategory(category.id)}
-                  className="w-full text-left font-semibold px-2 flex justify-between items-center cursor-pointer"
+                <div
+                  className="w-full text-left font-semibold px-2"
                   style={{ backgroundColor: category.color }}
                 >
                   <span>{category.name}</span>
-                  <span>{openCategories[category.id] ? '-' : '+'}</span>
-                </button>
-                {openCategories[category.id] && (
-                  <ul>
-                    {materials
-                      .filter(material => material.category_id === category.id)
-                      .map(material => (
-                        <li key={material.id}>
-                          <button
-                            onClick={() => handleMaterialSelect(material)}
-                            className="w-full text-left p-1 rounded-b cursor-pointer"
-                            style={{ backgroundColor: lightenColor(category.color, 80) }}
-                          >
-                            {material.name}
-                          </button>
-                        </li>
-                      ))}
-                  </ul>
-                )}
+                </div>
+                <ul>
+                  {materials
+                    .filter(material => material.category_id === category.id)
+                    .map(material => (
+                      <li key={material.id}>
+                        <button
+                          onClick={() => handleMaterialSelect(material)}
+                          className="w-full text-left p-1 rounded-b cursor-pointer"
+                          style={{ backgroundColor: lightenColor(category.color, 80) }}
+                        >
+                          {material.name}
+                        </button>
+                      </li>
+                    ))}
+                </ul>
               </div>
             ))}
           </div>
