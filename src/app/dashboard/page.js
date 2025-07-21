@@ -8,12 +8,15 @@ import MaterialManagement from '@/components/material/MaterialManagement';
 import { supabase } from '@/lib/supabaseClient';
 import { lightenColor } from '@/lib/colorUtils';
 import MaterialDetails from '@/components/material/MaterialDetails';
+import DilutionCalculatorModal from '@/components/dilution/DilutionCalculatorModal';
 
 function DashboardPage() {
   const [activeTab, setActiveTab] = useState('materials');
   const [materials, setMaterials] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [isCalculatorOpen, setCalculatorOpen] = useState(false);
+
   const fetchSidebarData = async () => {
     const { data: categoriesData, error: categoriesError } = await supabase
       .from('categories')
@@ -76,6 +79,12 @@ function DashboardPage() {
           >
             Categories
           </button>
+          <button
+            onClick={() => setCalculatorOpen(true)}
+            className="py-1 px-3 rounded cursor-pointer bg-gray-200 hover:bg-gray-300"
+          >
+            Dilution Calculator
+          </button>
           <LogoutButton />
         </div>
       </div>
@@ -130,6 +139,7 @@ function DashboardPage() {
           )}
         </div>
       </div>
+      <DilutionCalculatorModal isOpen={isCalculatorOpen} onClose={() => setCalculatorOpen(false)} />
     </ProtectedRoute>
   );
 }
